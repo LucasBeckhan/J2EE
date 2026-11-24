@@ -12,3 +12,7 @@ target/
 
 # Logs
 *.log
+
+# Heap dumps（jmap/MAT 实操产物，体积大，不入库）
+*.hprof
+jvm-lab/dumps/

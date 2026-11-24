@@ -47,4 +47,8 @@ public class TaskBus {
     public long getExecuted() {
         return executed.get();
     }
+
+    public MyThreadPool getPool() {
+        return pool;
+    }
 }
