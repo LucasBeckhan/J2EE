@@ -1,0 +1,37 @@
+# Spring Boot 默认读取此文件。缩进表示层级，server.port 对应下面的嵌套写法。
+# Java API 与前端 Vite 分别监听 8080、5173，二者是独立的服务器进程。
+server:
+  port: 8080
+
+spring:
+  datasource:
+    # mem:miniseckill 表示命名内存库：同名连接访问同一份数据，后端进程退出后数据消失。
+    # MODE=MySQL 只是部分 SQL 语法兼容，不代表使用了 MySQL，也不保证两者并发行为完全相同。
+    # DB_CLOSE_DELAY=-1 让内存库在最后一个连接关闭后仍保留，直到当前 JVM 退出。
+    # DATABASE_TO_LOWER=TRUE 将未加引号的标识符转为小写，便于观察生成的表名。
+    url: jdbc:h2:mem:miniseckill;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    # 驱动负责 Java/JDBC 与 H2 通信；连接池由 Spring Boot 根据现有依赖自动配置。
+    driver-class-name: org.h2.Driver
+    username: sa
+    # 演示库没有密码；这是本地开发配置，不是生产数据库凭据配置模板。
+    password:
+  h2:
+    console:
+      # 本地可访问 http://localhost:8080/h2-console；连接时使用上方完整 JDBC URL。
+      # 控制台可观察 products、seckill_orders 和唯一约束，便于理解 JPA 映射。
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      # Hibernate 启动时根据 @Entity 更新表结构；并非生产数据库版本迁移工具。
+      # 本项目每次进程启动都是新内存库，所以通常表现为重新创建表。
+      ddl-auto: update
+    # 请求进入 Controller 后不额外保持一个跨到 Web 层的持久化上下文。
+    # 写事务明确放在 Service 中；实体没有懒加载关联，因此直接序列化不需要额外查关联。
+    open-in-view: false
+    # 在终端打印 SQL，便于观察查询、条件扣库存与插入订单。不是完整的事务审计日志。
+    show-sql: true
+    properties:
+      hibernate:
+        # 只控制 SQL 日志换行缩进，不影响执行顺序、事务或查询性能。
+        format_sql: true

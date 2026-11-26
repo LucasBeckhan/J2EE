@@ -21,6 +21,7 @@
     <module>mythreadpool</module>
     <module>mini-rpc</module>
     <module>jvm-lab</module>
+    <module>mini-seckill</module>
   </modules>
 
 </project>

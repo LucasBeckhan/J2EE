@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <!-- 继承根工程的 groupId、version 和 Java 8 编译设置。
+         这是 Maven 子模块；前端使用 npm 管理，不加入 Maven modules。 -->
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>J2EE</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>mini-seckill</artifactId>
+
+    <properties>
+        <spring-boot.version>2.7.18</spring-boot.version>
+    </properties>
+
+    <!-- BOM 统一管理 Spring 相关依赖版本：import 只导入版本规则，不自动添加所有依赖。
+         真正使用的库仍需在下方 dependencies 中逐个声明。
+         当前继承普通 Maven 父项目，因此手动导入 Boot BOM 并配置 Boot 插件。 -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Web starter 引入 Spring MVC、JSON 序列化所需组件和内嵌 Tomcat。
+             浏览器请求由 Tomcat 工作线程接收，然后分发给 @RestController。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- Data JPA starter 引入 Spring Data JPA、Hibernate 和 JDBC 支持。
+             Repository 代理负责持久化；@Transactional 负责本地数据库事务；
+             库存关键操作使用 @Query 条件更新，而不是把查询结果在 Java 内减一。 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <!-- H2 是嵌入式数据库；不需要先安装外部数据库服务。
+             runtime 表示应用运行时需要，Java 源码不直接引用 H2 的专有类。
+             替换成 MySQL 需要同时修改驱动依赖和 datasource 配置。 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- repackage 将普通 JAR 重新打包成包含依赖的可运行 Boot JAR。
+                 spring-boot:run 则供开发时直接运行；这两个目标用途不同。
+                 因未继承 spring-boot-starter-parent，插件版本也需要明确指定。 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals><goal>repackage</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
